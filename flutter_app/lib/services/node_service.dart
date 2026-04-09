@@ -162,7 +162,7 @@ class NodeService {
     // restart (GatewayService.start() nulls it out) but the config file still
     // holds the authoritative token, preventing token_missing reconnect loops.
     try {
-      final raw = await NativeBridge.readRootfsFile('root/.clawhub/clawhub.json');
+      final raw = await NativeBridge.readRootfsFile('root/.openclaw/openclaw.json');
       if (raw != null) {
         final config = jsonDecode(raw) as Map<String, dynamic>;
         final token = config['gateway']?['auth']?['token'];

@@ -5,8 +5,8 @@
   "main": "lib/index.js",
   "type": "module",
   "bin": {
-    "clawhub": "bin/openclawx",
-    "openclawx-setup": "bin/openclawx"
+    "clawhub": "bin/clawhub",
+    "openclawx-setup": "bin/clawhub"
   },
   "scripts": {
     "test": "node lib/test.js",

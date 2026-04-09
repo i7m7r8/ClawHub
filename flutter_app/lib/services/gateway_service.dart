@@ -118,7 +118,7 @@ class GatewayService {
     });
   }
 
-  /// Patch /root/.clawhub/clawhub.json to clear denyCommands and set
+  /// Patch /root/.openclaw/openclaw.json to clear denyCommands and set
   /// allowCommands for all node capabilities. This is the config file the
   /// gateway actually reads (not a separate gateway.json).
   Future<void> _writeNodeAllowConfig() async {
@@ -138,7 +138,7 @@ class GatewayService {
     final allowJson = jsonEncode(allowCommands);
     final script = '''
 const fs = require("fs");
-const p = "/root/.clawhub/clawhub.json";
+const p = "/root/.openclaw/openclaw.json";
 let c = {};
 try { c = JSON.parse(fs.readFileSync(p, "utf8")); } catch {}
 if (!c.gateway) c.gateway = {};
@@ -171,7 +171,7 @@ fs.writeFileSync(p, JSON.stringify(c, null, 2));
     if (!prootOk) {
       try {
         final filesDir = await NativeBridge.getFilesDir();
-        final configFile = File('$filesDir/rootfs/ubuntu/root/.clawhub/clawhub.json');
+        final configFile = File('$filesDir/rootfs/ubuntu/root/.openclaw/openclaw.json');
         Map<String, dynamic> config = {};
         if (configFile.existsSync()) {
           try {
@@ -202,7 +202,7 @@ fs.writeFileSync(p, JSON.stringify(c, null, 2));
   Future<void> _repairConfigFile() async {
     try {
       final filesDir = await NativeBridge.getFilesDir();
-      final configFile = File('$filesDir/rootfs/ubuntu/root/.clawhub/clawhub.json');
+      final configFile = File('$filesDir/rootfs/ubuntu/root/.openclaw/openclaw.json');
       if (!configFile.existsSync()) return;
       final content = configFile.readAsStringSync();
       if (content.isEmpty) return;
@@ -276,7 +276,7 @@ fs.writeFileSync(p, JSON.stringify(c, null, 2));
   /// This is the source of truth — more reliable than regex-scraping stdout.
   Future<String?> _readTokenFromConfig() async {
     try {
-      final raw = await NativeBridge.readRootfsFile('root/.clawhub/clawhub.json');
+      final raw = await NativeBridge.readRootfsFile('root/.openclaw/openclaw.json');
       if (raw == null) return null;
       final config = jsonDecode(raw) as Map<String, dynamic>;
       final token = config['gateway']?['auth']?['token'];

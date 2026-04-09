@@ -353,7 +353,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _exportSnapshot() async {
     try {
-      final clawhubJson = await NativeBridge.readRootfsFile('root/.clawhub/clawhub.json');
+      final clawhubJson = await NativeBridge.readRootfsFile('root/.openclaw/openclaw.json');
       final snapshot = {
         'version': AppConstants.version,
         'timestamp': DateTime.now().toIso8601String(),
@@ -402,7 +402,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       // Restore clawhub.json into rootfs
       final clawhubConfig = snapshot['clawhubConfig'] as String?;
       if (clawhubConfig != null) {
-        await NativeBridge.writeRootfsFile('root/.clawhub/clawhub.json', clawhubConfig);
+        await NativeBridge.writeRootfsFile('root/.openclaw/openclaw.json', clawhubConfig);
       }
 
       // Restore preferences

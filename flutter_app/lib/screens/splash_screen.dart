@@ -87,7 +87,7 @@ class _SplashScreenState extends State<SplashScreen>
               await downloadDir.create(recursive: true);
             }
             final snapshotPath = '$sdcard/Download/clawhub-snapshot-$oldVersion.json';
-            final clawhubJson = await NativeBridge.readRootfsFile('root/.clawhub/clawhub.json');
+            final clawhubJson = await NativeBridge.readRootfsFile('root/.openclaw/openclaw.json');
             final snapshot = {
               'version': oldVersion,
               'timestamp': DateTime.now().toIso8601String(),
@@ -152,7 +152,7 @@ class _SplashScreenState extends State<SplashScreen>
             if (!clawhubOk && nodeOk) {
               setState(() => _status = 'Reinstalling ClawHub...');
               try {
-                const wrapper = '/root/.clawhub/node-wrapper.js';
+                const wrapper = '/root/.openclaw/node-wrapper.js';
                 const nodeRun = 'node $wrapper';
                 const npmCli = '/usr/local/lib/node_modules/npm/bin/npm-cli.js';
                 await NativeBridge.runInProot(

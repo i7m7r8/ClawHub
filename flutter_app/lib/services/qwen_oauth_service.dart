@@ -9,7 +9,7 @@ import 'native_bridge.dart';
 /// This service reads that token and injects it into the proot environment
 /// so that clawhub, zeroclaw, and other AI tools can use it.
 class QwenOAuthService {
-  static const _termuxTokenPath = '/root/.clawhub/qwen-oauth-termux.json';
+  static const _termuxTokenPath = '/root/.openclaw/qwen-oauth-termux.json';
 
   /// Read the Qwen OAuth token from Termux home directory.
   /// Returns the parsed token object, or null if not found/expired.
@@ -54,7 +54,7 @@ class QwenOAuthService {
       // Also set environment variables for tools that read them
       await NativeBridge.runInProot(
         'mkdir -p /root/.clawhub && '
-        'cat > /root/.clawhub/qwen-oauth.env <<EOF\n'
+        'cat > /root/.openclaw/qwen-oauth.env <<EOF\n'
         'QWEN_ACCESS_TOKEN=${token['access_token']}\n'
         'QWEN_MODEL=${token['model'] ?? 'qwen3-coder-plus'}\n'
         'EOF',

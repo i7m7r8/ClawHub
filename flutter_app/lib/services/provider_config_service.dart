@@ -4,7 +4,7 @@ import 'native_bridge.dart';
 
 /// Reads and writes AI provider configuration in clawhub.json.
 class ProviderConfigService {
-  static const _configPath = '/root/.clawhub/clawhub.json';
+  static const _configPath = '/root/.openclaw/openclaw.json';
 
   /// Escape a string for use as a single-quoted shell argument.
   static String _shellEscape(String s) {
