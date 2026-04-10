@@ -48,12 +48,12 @@ class QwenOAuthService {
 
       final json = const JsonEncoder.withIndent('  ').convert(token);
 
-      // Write to rootfs where clawhub/zeroclaw can find it
+      // Write to rootfs where openclaw/zeroclaw can find it
       await NativeBridge.writeRootfsFile(_termuxTokenPath, json);
 
       // Also set environment variables for tools that read them
       await NativeBridge.runInProot(
-        'mkdir -p /root/.clawhub && '
+        'mkdir -p /root/.openclaw && '
         'cat > /root/.openclaw/qwen-oauth.env <<EOF\n'
         'QWEN_ACCESS_TOKEN=${token['access_token']}\n'
         'QWEN_MODEL=${token['model'] ?? 'qwen3-coder-plus'}\n'

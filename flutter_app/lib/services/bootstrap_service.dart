@@ -259,9 +259,10 @@ class BootstrapService {
         progress: 0.0,
         message: 'Installing ClawHub (this may take a few minutes)...',
       ));
-      // Install clawhub — fork/exec works now with our Termux-matching proot.
+      // Install openclaw — fork/exec works now with our Termux-matching proot.
+      // Note: npm package stays "openclaw" — only the Android app is ClawHub.
       await NativeBridge.runInProot(
-        '$nodeRun $npmCli install -g clawhub',
+        '$nodeRun $npmCli install -g openclaw',
         timeout: 1800,
       );
 
@@ -282,7 +283,7 @@ class BootstrapService {
         progress: 0.9,
         message: 'Verifying ClawHub...',
       ));
-      await NativeBridge.runInProot('clawhub --version || echo clawhub_installed');
+      await NativeBridge.runInProot('openclaw --version || echo openclaw_installed');
       onProgress(const SetupState(
         step: SetupStep.installingClawHub,
         progress: 1.0,
