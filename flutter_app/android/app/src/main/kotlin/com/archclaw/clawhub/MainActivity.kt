@@ -591,13 +591,13 @@ class MainActivity : FlutterActivity() {
                 }
                 "getQwenOAuthToken" -> {
                     // Read Qwen OAuth token from Termux home directory
-                    // Path: /data/data/com.termux/files/home/.archclaw/qwen-oauth.json
+                    // Path: /data/data/com.termux/files/home/.qwen/oauth_creds.json
                     // This allows ClawHub to share the OAuth token with
                     // openclaw/zeroclaw/other claws running inside proot.
                     Thread {
                         try {
                             val termuxHome = "/data/data/com.termux/files/home"
-                            val tokenFile = java.io.File("$termuxHome/.archclaw/qwen-oauth.json")
+                            val tokenFile = java.io.File("$termuxHome/.qwen/oauth_creds.json")
                             if (tokenFile.exists()) {
                                 val json = tokenFile.readText()
                                 runOnUiThread { result.success(json) }

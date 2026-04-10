@@ -3,27 +3,37 @@ import 'native_bridge.dart';
 
 /// Manages Qwen OAuth token sharing between Termux and ClawHub.
 ///
-/// When the user configures Qwen OAuth via `qwen auth` in Termux,
-/// the token is saved to `~/.archclaw/qwen-oauth.json`.
+/// When the user configures Qwen Code OAuth in Termux,
+/// the token is saved to `~/.qwen/oauth_creds.json`.
 ///
 /// This service reads that token and injects it into the proot environment
-/// so that clawhub, zeroclaw, and other AI tools can use it.
+/// so that openclaw, zeroclaw, and other AI tools can use it.
 class QwenOAuthService {
-  static const _termuxTokenPath = '/root/.openclaw/qwen-oauth-termux.json';
+  static const _termuxTokenPath = '/root/.qwen/oauth_creds.json';
 
   /// Read the Qwen OAuth token from Termux home directory.
   /// Returns the parsed token object, or null if not found/expired.
+  ///
+  /// Actual JSON structure from `~/.qwen/oauth_creds.json`:
+  /// {
+  ///   "access_token": "...",
+  ///   "token_type": "Bearer",
+  ///   "refresh_token": "...",
+  ///   "resource_url": "portal.qwen.ai",
+  ///   "expiry_date": 1775807337002  // MILLISECONDS
+  /// }
   static Future<Map<String, dynamic>?> getToken() async {
     try {
       final json = await NativeBridge.getQwenOAuthToken();
       if (json == null || json.isEmpty) return null;
 
       final data = jsonDecode(json) as Map<String, dynamic>;
-      final expiresAt = data['expires_at'] as int? ?? 0;
-      final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
 
-      // Check if token is still valid
-      if (expiresAt > now) {
+      // expiry_date is in MILLISECONDS (not seconds)
+      final expiryDate = data['expiry_date'] as int? ?? 0;
+      final now = DateTime.now().millisecondsSinceEpoch;
+
+      if (expiryDate > now) {
         return data;
       }
       return null; // Expired
@@ -40,23 +50,20 @@ class QwenOAuthService {
 
   /// Inject the Qwen OAuth token into the proot environment.
   /// Writes the token to a file inside the rootfs that AI tools can read.
-  /// Returns true if the token was successfully injected.
   static Future<bool> injectIntoProot() async {
     try {
       final token = await getToken();
       if (token == null) return false;
 
       final json = const JsonEncoder.withIndent('  ').convert(token);
-
-      // Write to rootfs where openclaw/zeroclaw can find it
       await NativeBridge.writeRootfsFile(_termuxTokenPath, json);
 
-      // Also set environment variables for tools that read them
+      // Set environment variables for tools that read them
       await NativeBridge.runInProot(
         'mkdir -p /root/.openclaw && '
         'cat > /root/.openclaw/qwen-oauth.env <<EOF\n'
         'QWEN_ACCESS_TOKEN=${token['access_token']}\n'
-        'QWEN_MODEL=${token['model'] ?? 'qwen3-coder-plus'}\n'
+        'QWEN_MODEL=qwen3-coder-plus\n'
         'EOF',
         timeout: 10,
       );
@@ -79,14 +86,14 @@ class QwenOAuthService {
     if (token == null) return null;
 
     final expiresAt = DateTime.fromMillisecondsSinceEpoch(
-      (token['expires_at'] as int) * 1000,
+      token['expiry_date'] as int,
     );
-    final scope = token['scope'] as String? ?? 'qwen-code-api';
+    final resourceUrl = token['resource_url'] as String? ?? 'portal.qwen.ai';
     final now = DateTime.now();
     final remaining = expiresAt.difference(now);
 
     return {
-      'scope': scope,
+      'resource_url': resourceUrl,
       'expires': expiresAt.toLocal().toString(),
       'remaining': remaining.inHours > 0
           ? '${remaining.inHours}h ${remaining.inMinutes % 60}m'

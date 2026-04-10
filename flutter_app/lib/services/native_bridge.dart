@@ -194,7 +194,7 @@ class NativeBridge {
   }
 
   // ═══════════════════════════════════════════════
-  // Qwen OAuth — shared with Termux ~/.archclaw/
+  // Qwen OAuth — shared with Termux ~/.qwen/
   // ═══════════════════════════════════════════════
 
   /// Read Qwen OAuth token JSON from Termux home directory.
