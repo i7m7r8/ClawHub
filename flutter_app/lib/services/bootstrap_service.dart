@@ -261,8 +261,10 @@ class BootstrapService {
       ));
       // Install openclaw — fork/exec works now with our Termux-matching proot.
       // Note: npm package stays "openclaw" — only the Android app is ClawHub.
+      // Speed flags: --no-audit (skip vulnerability scan), --no-fund (skip fund msg),
+      // --prefer-offline (use cached packages first), --legacy-peer-deps (skip peer dep conflicts)
       await NativeBridge.runInProot(
-        '$nodeRun $npmCli install -g openclaw',
+        '$nodeRun $npmCli install -g openclaw --no-audit --no-fund --prefer-offline --legacy-peer-deps',
         timeout: 1800,
       );
 
@@ -275,7 +277,7 @@ class BootstrapService {
       // npm global install creates symlinks for bin entries, but symlinks
       // can fail silently in proot. Create shell wrappers from Java side
       // (reads package.json directly from rootfs filesystem — no escaping).
-      await NativeBridge.createBinWrappers('clawhub');
+      await NativeBridge.createBinWrappers('openclaw');
 
       _updateSetupNotification('Verifying ClawHub...', progress: 96);
       onProgress(const SetupState(
